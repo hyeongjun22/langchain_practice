@@ -2,10 +2,12 @@ from fastapi import APIRouter, UploadFile
 import uuid
 import os
 from ..vectorstores import vectorstores
+from app.schemas import UploadResponse
+
 
 router = APIRouter(tags = ['documents'])
 
-@router.post("/documents")
+@router.post("/documents/upload", response_model=UploadResponse)
 async def chat(file: UploadFile):
     Upload_DIR = "./upload"
     content = await file.read()
@@ -18,4 +20,8 @@ async def chat(file: UploadFile):
     load = vectorstore.load(os.path.join(Upload_DIR,filename))
     splitted = vectorstore.split(load)
     vectorstore.insert(splitted)
-    return {"filename" : filename,"splitted" : splitted[0]}
+    return UploadResponse(
+        collection_name="sesac0207",
+        chunks_indexed=len(splitted),
+        filename=filename
+    )

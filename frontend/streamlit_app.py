@@ -5,7 +5,7 @@ import streamlit as st
 
 st.set_page_config(page_title="LCEL RAG Chat", layout="centered")
 
-api_base = st.sidebar.text_input("API Base URL", "http://localhost:8000")
+api_base = st.sidebar.text_input("API Base URL", "http://backend:8080")
 
 if "session_id" not in st.session_state:
     st.session_state.session_id = str(uuid.uuid4())
@@ -62,7 +62,11 @@ if prompt:
 
     if mode == "Non-Streaming":
         with st.chat_message("assistant"):
-            r = requests.post(f"{api_base}/chat", json=payload, timeout=120)
+            r = requests.post(
+                f"{api_base}/chat",
+                params={"query": prompt},
+                timeout=120,
+            )
             if r.ok:
                 answer = r.json()["answer"]
                 st.markdown(answer)
@@ -78,7 +82,7 @@ if prompt:
             try:
                 with requests.post(
                     f"{api_base}/chat/stream",
-                    json=payload,
+                    params={"query": prompt},
                     stream=True,
                     timeout=120,
                 ) as r:

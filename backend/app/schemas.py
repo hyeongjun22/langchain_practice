@@ -7,7 +7,9 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     answer : str 
-    collection_name:str
+    collection_name: Optional[str] = None
 
 class UploadResponse(BaseModel):
-    anser : str
+    collection_name: str
+    chunks_indexed: int
+    filename: str
